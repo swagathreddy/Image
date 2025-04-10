@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Think and Escape - Image Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #121212;
+            color: #fff;
+            text-align: center;
+            padding: 2rem;
+        }
+        input, button {
+            padding: 10px;
+            font-size: 1rem;
+        }
+        #result {
+            margin-top: 2rem;
+        }
+        img {
+            max-width: 90%;
+            margin-top: 1rem;
+            border: 2px solid #0ff;
+        }
+    </style>
+</head>
+<body>
+    <h1>Think and Escape - AI Image Generator</h1>
+    <p>Enter a theme or description below:</p>
+    <input type="text" id="promptInput" placeholder="Describe the scene..." size="50">
+    <button onclick="generateImage()">Generate</button>
+
+    <div id="result">
+        <p id="status"></p>
+        <img id="generatedImage" src="" alt="" style="display: none;">
+    </div>
+
+    <script>
+        async function generateImage() {
+            const prompt = document.getElementById("promptInput").value;
+            const status = document.getElementById("status");
+            const image = document.getElementById("generatedImage");
+            image.style.display = "none";
+
+            status.textContent = "Generating image...";
+
+            const res = await fetch("/generate", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ prompt: prompt })
+            });
+
+            const data = await res.json();
+            if (data.image) {
+                image.src = `data:image/png;base64,${data.image}`;
+                image.style.display = "block";
+                status.textContent = "Here is your generated image:";
+            } else {
+                status.textContent = `Error: ${data.error}`;
+            }
+        }
+    </script>
+</body>
+</html>
